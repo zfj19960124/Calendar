@@ -1,7 +1,8 @@
-package com.zfj.android.newcalendar;
+package com.zfj.android.newcalender;
 
 import android.content.Context;
 import android.content.res.TypedArray;
+import android.graphics.Color;
 import android.support.annotation.NonNull;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
@@ -32,6 +33,10 @@ public class NewCalendar extends LinearLayout {
     private Calendar curDate = Calendar.getInstance();
     private String displayFormat;
     public NewCalenderListener listener;
+
+    /**
+     * 三个构造函数，除无参构造函数外，在里面调用初始化函数，
+     */
     public NewCalendar(Context context, AttributeSet attrs) {
         super(context, attrs);
         initControl(context, attrs);
@@ -46,9 +51,15 @@ public class NewCalendar extends LinearLayout {
         super(context);
     }
 
+    /**
+     * 初始化
+     * @param context
+     * @param attrs
+     */
     private void initControl(Context context, AttributeSet attrs){
         bindControl(context);
         bindControlEvent();
+        //主要是加载自定义的dateformat，写法固定
         TypedArray ta = getContext().obtainStyledAttributes(attrs, R.styleable.NewCalendar);
         try{
             String format = ta.getString(R.styleable.NewCalendar_dateFormat);
@@ -62,6 +73,10 @@ public class NewCalendar extends LinearLayout {
         renderCalendar();
     }
 
+    /**
+     * 绑定控件
+     * @param context
+     */
     private void bindControl(Context context) {
         LayoutInflater inflater = LayoutInflater.from(context);
         inflater.inflate(R.layout.calendar_view, this);
@@ -71,10 +86,14 @@ public class NewCalendar extends LinearLayout {
         grid = (GridView) findViewById(R.id.calendar_grid);
     }
 
+    /**
+     * 添加事件
+     */
     private void bindControlEvent() {
         btnPrev.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
+                //Calendar类，月份减1
                 curDate.add(Calendar.MONTH, -1);
                 renderCalendar();
             }
@@ -83,6 +102,7 @@ public class NewCalendar extends LinearLayout {
         btnNext.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
+                //Calendar类，月份加1
                 curDate.add(Calendar.MONTH, 1);
                 renderCalendar();
             }
@@ -90,12 +110,14 @@ public class NewCalendar extends LinearLayout {
     }
     private void renderCalendar(){
         SimpleDateFormat sdf = new SimpleDateFormat(displayFormat);
+        //月份和年份显示到text中
         txtDate.setText(sdf.format(curDate.getTime()));
 
         ArrayList<Date> cells = new ArrayList<>();
         Calendar calendar = (Calendar) curDate.clone();
 
         calendar.set(Calendar.DAY_OF_MONTH, 1);
+        //计算上个月有几天
         int prevDays = calendar.get(Calendar.DAY_OF_WEEK) - 1;
         calendar.add(Calendar.DAY_OF_MONTH, -prevDays);
 
@@ -111,7 +133,7 @@ public class NewCalendar extends LinearLayout {
                 if(listener == null) {
                     return false;
                 }else {
-                    listener.onLongClickItem((Date) parent.getItemAtPosition(position));
+                   listener.onItemLongPress((Date) parent.getItemAtPosition(position));
                     return true;
                 }
 
@@ -119,6 +141,9 @@ public class NewCalendar extends LinearLayout {
         });
     }
 
+    /**
+     * GridView的适配器
+     */
     private class CalendarAdapter extends ArrayAdapter<Date>{
 
         LayoutInflater inflater;
@@ -139,10 +164,52 @@ public class NewCalendar extends LinearLayout {
 
             int day = date.getDate();
             ((TextView) convertView).setText(String.valueOf(day));
+
+            /**
+             * 错误
+             */
+//            //获取当前月数天数
+//            Calendar calendar = (Calendar) curDate.clone();
+//            calendar.set(Calendar.DAY_OF_MONTH,1);
+//            int daysInMonth = calendar.getActualMaximum(Calendar.DATE);
+                // 当前月份的天
+//                if(day >= 1 && day<= daysInMonth){
+//                    ((TextView)convertView).setTextColor(Color.parseColor("#000000"));
+//                }else{
+//                    ((TextView)convertView).setTextColor(Color.parseColor("#666666"));
+//                }
+
+            Boolean isTheSameMonth = false;
+            //今天
+            Date now = new Date();
+            if(date.getMonth() == now.getMonth()){
+                isTheSameMonth = true;
+            }
+            if(isTheSameMonth){
+                ((TextView)convertView).setTextColor(Color.parseColor("#000000"));
+            }else{
+                ((TextView)convertView).setTextColor(Color.parseColor("#666666"));
+            }
+
+
+
+
+            if(now.getDate() == date.getDate()&&now.getMonth() == date.getMonth()
+                    &&now.getYear() == date.getYear()){
+                ((TextView)convertView).setTextColor(Color.parseColor("#000000"));
+                ((Calendar_day_textView)convertView).isToday = true;
+
+            }
+
+
             return convertView;
         }
     }
+
+    /**
+     * 回调方法，当单击GridView子视图调用。
+     */
     public interface NewCalenderListener{
-        void onLongClickItem(Date day);
+        void onItemLongPress(Date day);
     }
 }
