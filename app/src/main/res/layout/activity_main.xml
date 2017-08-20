@@ -8,16 +8,17 @@
     android:paddingLeft="@dimen/activity_horizontal_margin"
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
-    tools:context="com.zfj.android.newcalendar.MainActivity"
+    tools:context="com.zfj.android.newcalender.MainActivity"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     >
-    <com.zfj.android.newcalendar.NewCalendar
-        xmlns:NewCalendarNS="http://schemas.android.com/apk/res/com.zfj.android.newcalendar"
+    <com.zfj.android.newcalender.NewCalendar
+        xmlns:NewCalendarNS="http://schemas.android.com/apk/res/com.zfj.android.newcalender"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         NewCalendarNS:dateFormat="MMMM yyyy"
-        android:id="@+id/newCalendar"
+        android:id="@+id/newCalender"
         >
 
-    </com.zfj.android.newcalendar.NewCalendar>
+    </com.zfj.android.newcalender.NewCalendar>
 
 </RelativeLayout>
